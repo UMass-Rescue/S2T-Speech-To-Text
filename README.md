@@ -24,4 +24,14 @@ Things to set up:
             Download the zip file from https://github.com/BtbN/FFmpeg-Builds/releases
     
             Extract and put the link to bin folder into System varibales path variable
+       
+       Install whisper-timestamped
+
+            https://github.com/linto-ai/whisper-timestamped
+
+       Install PyAnnote
+
+            https://github.com/pyannote/pyannote-audio
+
+
 
