@@ -15,27 +15,27 @@ const AudioDropDisplay: React.FC = () => {
     setFile(null); // Reset the file state to null
   };
 
-  const handleSubmit = async() => {
+  const handleSubmit = async () => {
     const formData = new FormData();
-    formData.append("file_upload",file)
+    if (file !== null) {
+      formData.append("file_upload", file);
+    }
+    try {
+      const endpoint = "http://127.0.0.1:8000/uploadfile/";
+      const response = await fetch(endpoint, {
+        method: "POST",
+        body: formData,
+      });
 
-    try{
-      const endpoint = "http://127.0.0.1:8000/uploadfile/"
-      const  response = await fetch(endpoint,
-        {
-          method:"POST",
-          body:formData
-        });
-
-        if(response.ok){
-          console.log("File Uploaded Successfully")
-        }else{
-          console.error("Failed to uplaod")
-        }
-    }catch(error){
-      console.error(error)
-  }
-  }
+      if (response.ok) {
+        console.log("File Uploaded Successfully");
+      } else {
+        console.error("Failed to uplaod");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
@@ -56,23 +56,31 @@ const AudioDropDisplay: React.FC = () => {
           backgroundColor: "white",
         }}
       >
-          <input {...getInputProps()} />
-          <p className="dropzone-text">
-            Either Drop A File Here Or Click To Browse Your Device
-          </p>
+        <input {...getInputProps()} />
+        <p className="dropzone-text">
+          Either Drop A File Here Or Click To Browse Your Device
+        </p>
       </div>
-      {/* Display Submit Button, Once a file is uplaoded */}
+      {/* Display Submit Button and Remove Button, Once a file is uplaoded */}
       {file && (
-          <div style={{ marginTop: "10px" }}>
-              <button onClick={handleSubmit}>Upload Audio</button>
-          </div>
-          )}
+        <div
+          style={{
+            marginTop: "10px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "20px",
+          }}
+        >
+          <button onClick={handleSubmit}>Upload Audio</button>
+          <button onClick={removeAudio}>Remove Audio</button>
+        </div>
+      )}
 
-      {/*Display File attachd and Remove Button */}
+      {/*Display File Attached */}
       {file && (
         <div style={{ marginTop: "10px" }}>
           <p>File Attached: {file.name}</p>
-          <button onClick={removeAudio}>Remove Audio</button>
         </div>
       )}
     </div>
