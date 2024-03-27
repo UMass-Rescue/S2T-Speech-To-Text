@@ -3,6 +3,9 @@ import { useDropzone } from "react-dropzone";
 
 const AudioDropDisplay: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
+  const [outputText, setOutputText] = useState<string>(
+    "                                          Output"
+  );
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     // Assuming you only want the first audio file if multiple are dropped
@@ -83,6 +86,14 @@ const AudioDropDisplay: React.FC = () => {
           <p>File Attached: {file.name}</p>
         </div>
       )}
+
+      {/* Output Box, by using Textarea element, should allow the box to expand with longer text*/}
+      <textarea
+        value={outputText}
+        onChange={(e) => setOutputText(e.target.value)}
+        style={{ marginTop: "20px", width: "100%", height: "150px" }}
+        readOnly
+      />
     </div>
   );
 };
