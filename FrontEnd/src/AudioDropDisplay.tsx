@@ -18,7 +18,7 @@ const AudioDropDisplay: React.FC = () => {
     setFile(null); // Reset the file state to null
   };
 
-  const handleSubmit = async (e: { preventDefault: () => void; }) => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     const formData = new FormData();
     if (file !== null) {
@@ -33,8 +33,32 @@ const AudioDropDisplay: React.FC = () => {
 
       if (response.ok) {
         console.log("File Uploaded Successfully");
-        setOutputText(await response.text())
-        
+        setOutputText(await response.text());
+      } else {
+        console.error("Failed to uplaod");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDiarizeSubmit = async (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    const formData = new FormData();
+    if (file !== null) {
+      formData.append("file_upload", file);
+    }
+    try {
+      const endpoint = "http://127.0.0.1:8000/uploadfile/";
+      const response = await fetch(endpoint, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        console.log("File Uploaded Successfully");
+        //setOutputText("Transcribing...");
+        setOutputText(await response.text());
       } else {
         console.error("Failed to uplaod");
       }
@@ -78,8 +102,9 @@ const AudioDropDisplay: React.FC = () => {
             gap: "20px",
           }}
         >
-          <button onClick={handleSubmit}>Upload Audio</button>
+          <button onClick={handleSubmit}>Transcribe Audio</button>
           <button onClick={removeAudio}>Remove Audio</button>
+          <button onClick={handleDiarizeSubmit}>Diarize Audio</button>
         </div>
       )}
 
