@@ -18,7 +18,8 @@ const AudioDropDisplay: React.FC = () => {
     setFile(null); // Reset the file state to null
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: { preventDefault: () => void; }) => {
+    e.preventDefault();
     const formData = new FormData();
     if (file !== null) {
       formData.append("file_upload", file);
@@ -32,6 +33,8 @@ const AudioDropDisplay: React.FC = () => {
 
       if (response.ok) {
         console.log("File Uploaded Successfully");
+        setOutputText(await response.text())
+        
       } else {
         console.error("Failed to uplaod");
       }
