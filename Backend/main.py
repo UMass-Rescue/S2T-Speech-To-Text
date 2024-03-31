@@ -1,6 +1,7 @@
 from fastapi import FastAPI, File, UploadFile,Response
 from fastapi.middleware.cors import CORSMiddleware
 from transcribeWhisper import transcribe
+import os
 
 app = FastAPI()
 
@@ -26,7 +27,7 @@ async def root():
 @app.post("/uploadfile/")
 async def create_upload_file(file_upload: UploadFile):
     data = await file_upload.read()
-    path = file_upload.filename
+    path = os.path.join("../audioData",file_upload.filename)
     print(path)
     with open(path,'wb') as f:
         f.write(data)
@@ -37,3 +38,14 @@ async def create_upload_file(file_upload: UploadFile):
 
 # @app.get("/transcribe/")
 # async def transcribeAudio():
+
+@app.post("/diarization/")
+async def create_diarization(file_upload: UploadFile):
+    data = await file_upload.read()
+    path = os.path.join("../audioData",file_upload.filename)
+    print(path)
+    with open(path,'wb') as f:
+        f.write(data)
+    
+    text = transcribe(path)
+    return Response(content=text)
