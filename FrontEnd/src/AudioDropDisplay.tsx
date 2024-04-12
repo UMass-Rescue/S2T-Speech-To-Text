@@ -3,9 +3,8 @@ import { useDropzone } from "react-dropzone";
 
 const AudioDropDisplay: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
-  const [outputText, setOutputText] = useState<string>(
-    "                                          Output"
-  );
+  const initialOutputText = "                                          Output";
+  const [outputText, setOutputText] = useState<string>(initialOutputText);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     // Assuming you only want the first audio file if multiple are dropped
@@ -16,6 +15,15 @@ const AudioDropDisplay: React.FC = () => {
   // Function to remove the selected audio file
   const removeAudio = () => {
     setFile(null); // Reset the file state to null
+  };
+  //Sourced from https://stackoverflow.com/questions/44656610/download-a-string-as-txt-file-in-react
+  const downloadTextFile = () => {
+    const element = document.createElement("a");
+    const file = new Blob([outputText], { type: "text/plain" });
+    element.href = URL.createObjectURL(file);
+    element.download = "output.txt";
+    document.body.appendChild(element);
+    element.click();
   };
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
@@ -122,6 +130,19 @@ const AudioDropDisplay: React.FC = () => {
         style={{ marginTop: "20px", width: "100%", height: "150px" }}
         readOnly
       />
+      {outputText !== initialOutputText && (
+        <div
+          style={{
+            marginTop: "10px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "20px",
+          }}
+        >
+          <button onClick={downloadTextFile}>Download Output</button>
+        </div>
+      )}
     </div>
   );
 };
