@@ -2,20 +2,24 @@ import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
 const AudioDropDisplay: React.FC = () => {
-  const [file, setFile] = useState<File | null>(null);
+  const [file, setFile] = useState<File[]>([]);
   const initialOutputText = "                                          Output";
   const [outputText, setOutputText] = useState<string>(initialOutputText);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    // Assuming you only want the first audio file if multiple are dropped
-    const audioFile = acceptedFiles[0];
-    setFile(audioFile);
+    //Accept array of file
+    setFile((prevFiles) => [...prevFiles, ...acceptedFiles]);
   }, []);
 
   // Function to remove the selected audio file
-  const removeAudio = () => {
-    setFile(null); // Reset the file state to null
+  const removeAllAudio = () => {
+    setFile([]); // Reset the file state to null
   };
+
+  const removeOneAudio = (index: number) => {
+    setFile((currentFiles) => currentFiles.filter((_, idx) => idx !== index));
+  };
+
   //Sourced from https://stackoverflow.com/questions/44656610/download-a-string-as-txt-file-in-react
   const downloadTextFile = () => {
     const element = document.createElement("a");
@@ -29,9 +33,9 @@ const AudioDropDisplay: React.FC = () => {
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     const formData = new FormData();
-    if (file !== null) {
+    file.forEach((file) => {
       formData.append("file_upload", file);
-    }
+    });
     try {
       const endpoint = "http://127.0.0.1:8000/uploadfile/";
       const response = await fetch(endpoint, {
@@ -53,9 +57,9 @@ const AudioDropDisplay: React.FC = () => {
   const handleDiarizeSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     const formData = new FormData();
-    if (file !== null) {
-      formData.append("file_upload", file);
-    }
+    file.forEach((file) => {
+      formData.append("file_uploads", file);
+    });
     try {
       const endpoint = "http://127.0.0.1:8000/uploadfile/";
       const response = await fetch(endpoint, {
@@ -100,7 +104,7 @@ const AudioDropDisplay: React.FC = () => {
         </p>
       </div>
       {/* Display Submit Button and Remove Button, Once a file is uplaoded */}
-      {file && (
+      {file.length > 0 && (
         <div
           style={{
             marginTop: "10px",
@@ -111,15 +115,45 @@ const AudioDropDisplay: React.FC = () => {
           }}
         >
           <button onClick={handleSubmit}>Transcribe Audio</button>
-          <button onClick={removeAudio}>Remove Audio</button>
+          <button onClick={removeAllAudio}>Remove All Audio</button>
           <button onClick={handleDiarizeSubmit}>Diarize Audio</button>
         </div>
       )}
 
-      {/*Display File Attached */}
-      {file && (
+      {file.length > 0 && (
         <div style={{ marginTop: "10px" }}>
-          <p>File Attached: {file.name}</p>
+          <h4>Files Attached:</h4>
+          <ul style={{ listStyle: "none", padding: 0 }}>
+            {file.map((file, index) => (
+              <li
+                key={index}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: "5px",
+                  alignItems: "center",
+                }}
+              >
+                <span
+                  style={{
+                    flexGrow: 1,
+                    marginRight: "10px",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {file.name}
+                </span>
+                <button
+                  onClick={() => removeOneAudio(index)}
+                  style={{ marginLeft: "10px" }}
+                >
+                  X
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
