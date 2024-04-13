@@ -88,7 +88,7 @@ const AudioDropDisplay: React.FC = () => {
   });
 
   return (
-    <div>
+    <div style={{ margin: "20px" }}>
       <div
         {...getRootProps()}
         style={{
@@ -103,7 +103,7 @@ const AudioDropDisplay: React.FC = () => {
           Either Drop A File Here Or Click To Browse Your Device
         </p>
       </div>
-      {/* Display Submit Button and Remove Button, Once a file is uplaoded */}
+      {/* Display Submit Button and Remove Button, Once a file is uploaded */}
       {file.length > 0 && (
         <div
           style={{
@@ -119,11 +119,11 @@ const AudioDropDisplay: React.FC = () => {
           <button onClick={handleDiarizeSubmit}>Diarize Audio</button>
         </div>
       )}
-
+      {/* Display Files Attached */}
       {file.length > 0 && (
         <div style={{ marginTop: "10px" }}>
           <h4>Files Attached:</h4>
-          <ul style={{ listStyle: "none", padding: 0 }}>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
             {file.map((file, index) => (
               <li
                 key={index}
@@ -136,7 +136,7 @@ const AudioDropDisplay: React.FC = () => {
               >
                 <span
                   style={{
-                    flexGrow: 1,
+                    //flexGrow: 1,
                     marginRight: "10px",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
