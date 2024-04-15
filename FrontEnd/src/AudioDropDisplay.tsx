@@ -42,7 +42,7 @@ const AudioDropDisplay: React.FC = () => {
   };
 
   const nextButton = () => {
-    if (currentIndex < file.length - 1) {
+    if (currentIndex < outputArray.length - 1) {
       const nextInd = currentIndex + 1;
       setCurrentIndex(nextInd);
       const fileView = outputArray[nextInd];
