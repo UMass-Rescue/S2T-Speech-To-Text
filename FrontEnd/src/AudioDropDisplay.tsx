@@ -1,10 +1,20 @@
 import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
+interface FileData {
+  fileName: string;
+  transcriptData: string;
+}
+
 const AudioDropDisplay: React.FC = () => {
   const [file, setFile] = useState<File[]>([]);
-  const initialOutputText = "                                          Output";
+  const initialOutputText =
+    "                                        Output Box";
+  const loadingText = "                                          Loading...";
   const [outputText, setOutputText] = useState<string>(initialOutputText);
+  var outputString = "";
+  const [outputArray, setOutputArray] = useState<FileData[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     //Accept array of file
@@ -14,6 +24,7 @@ const AudioDropDisplay: React.FC = () => {
   // Function to remove the selected audio file
   const removeAllAudio = () => {
     setFile([]); // Reset the file state to null
+    setOutputText(initialOutputText);
   };
 
   const removeOneAudio = (index: number) => {
@@ -30,7 +41,28 @@ const AudioDropDisplay: React.FC = () => {
     element.click();
   };
 
+  const nextButton = () => {
+    if (currentIndex < file.length - 1) {
+      const nextInd = currentIndex + 1;
+      setCurrentIndex(nextInd);
+      const fileView = outputArray[nextInd];
+      const outputUpdate = fileView.transcriptData;
+      setOutputText(outputUpdate);
+    }
+  };
+
+  const backButton = () => {
+    if (currentIndex > 0) {
+      const prevInd = currentIndex - 1;
+      setCurrentIndex(prevInd);
+      const fileView = outputArray[prevInd];
+      const outputUpdate = fileView.transcriptData;
+      setOutputText(outputUpdate);
+    }
+  };
+
   const handleSubmit = async (e: { preventDefault: () => void }) => {
+    setOutputText(loadingText);
     e.preventDefault();
     const formData = new FormData();
     file.forEach((file) => {
@@ -46,19 +78,20 @@ const AudioDropDisplay: React.FC = () => {
       if (response.ok) {
         console.log("File Uploaded Successfully");
         const output = JSON.parse(await response.text());
-        var outputString ="";
-        file.forEach((file) => {
-          const fileName = file.name.toString()
-          outputString=outputString+fileName+"\n";
-          outputString+=output[0]["transcript"]+"\n";
+        //var outputString = "";
+        file.forEach((file, index) => {
+          const fileName = file.name.toString();
+          const transcriptData = output[index]["transcript"];
+          outputString = outputString + fileName + "\n";
+          outputString += output[0]["transcript"] + "\n";
+          outputArray.push({ fileName, transcriptData });
           // console.log(output[fileName])
-
         });
-        
-        console.log(output)
-        console.log(output[0])
-        console.log(output[1])
-        
+
+        console.log(output);
+        console.log(output[0]);
+        console.log(output[1]);
+
         setOutputText(outputString);
       } else {
         console.error("Failed to uplaod");
@@ -69,6 +102,7 @@ const AudioDropDisplay: React.FC = () => {
   };
 
   const handleDiarizeSubmit = async (e: { preventDefault: () => void }) => {
+    setOutputText(loadingText);
     e.preventDefault();
     const formData = new FormData();
     file.forEach((file) => {
@@ -178,7 +212,7 @@ const AudioDropDisplay: React.FC = () => {
         style={{ marginTop: "20px", width: "100%", height: "150px" }}
         readOnly
       />
-      {outputText !== initialOutputText && (
+      {outputText !== initialOutputText && outputText !== loadingText && (
         <div
           style={{
             marginTop: "10px",
@@ -188,7 +222,9 @@ const AudioDropDisplay: React.FC = () => {
             gap: "20px",
           }}
         >
+          <button onClick={backButton}>Back</button>
           <button onClick={downloadTextFile}>Download Output</button>
+          <button onClick={nextButton}>Next</button>
         </div>
       )}
     </div>
