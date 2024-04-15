@@ -45,7 +45,21 @@ const AudioDropDisplay: React.FC = () => {
 
       if (response.ok) {
         console.log("File Uploaded Successfully");
-        setOutputText(await response.text());
+        const output = JSON.parse(await response.text());
+        var outputString ="";
+        file.forEach((file) => {
+          const fileName = file.name.toString()
+          outputString=outputString+fileName+"\n";
+          outputString+=output[0]["transcript"]+"\n";
+          // console.log(output[fileName])
+
+        });
+        
+        console.log(output)
+        console.log(output[0])
+        console.log(output[1])
+        
+        setOutputText(outputString);
       } else {
         console.error("Failed to uplaod");
       }
