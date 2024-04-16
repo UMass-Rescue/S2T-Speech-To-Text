@@ -5,6 +5,7 @@ from typing import List
 import os
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
+from transcript_diarize import diarize
 
 app = FastAPI()
 
@@ -59,14 +60,16 @@ async def create_upload_file(file_upload: List[UploadFile]):
 
 @app.post("/diarization/")
 async def create_diarization(file_upload: UploadFile):
-    data = await file_upload.read()
-    path = os.path.join("../audioData",file_upload.filename)
-    print(path)
-    with open(path,'wb') as f:
-        f.write(data)
-    
-    text = transcribe(path)
-    return Response(content=text)
+    returnDict = {}
+    cnt=0
+    for file in file_upload:
+        data =await file.read()
+        path = os.path.join("../audioData",file.filename)
+        with open(path,'wb') as f:
+            f.write(data)
+    diarize_output = diarize()
+    print(diarize_output)
+    return diarize_output
 
 '''
     {
