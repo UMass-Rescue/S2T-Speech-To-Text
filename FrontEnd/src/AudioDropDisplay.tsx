@@ -15,6 +15,7 @@ const AudioDropDisplay: React.FC = () => {
   var outputString = "";
   const [outputArray, setOutputArray] = useState<FileData[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentFileName, setCurrentFileName] = useState<string>("");
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     //Accept array of file
@@ -25,6 +26,7 @@ const AudioDropDisplay: React.FC = () => {
   const removeAllAudio = () => {
     setFile([]); // Reset the file state to null
     setOutputText(initialOutputText);
+    setCurrentFileName("");
   };
 
   const removeOneAudio = (index: number) => {
@@ -47,7 +49,9 @@ const AudioDropDisplay: React.FC = () => {
       setCurrentIndex(nextInd);
       const fileView = outputArray[nextInd];
       const outputUpdate = fileView.transcriptData;
+      const outputNameUpdate = fileView.fileName;
       setOutputText(outputUpdate);
+      setCurrentFileName(outputNameUpdate);
     }
   };
 
@@ -57,7 +61,9 @@ const AudioDropDisplay: React.FC = () => {
       setCurrentIndex(prevInd);
       const fileView = outputArray[prevInd];
       const outputUpdate = fileView.transcriptData;
+      const outputNameUpdate = fileView.fileName;
       setOutputText(outputUpdate);
+      setCurrentFileName(outputNameUpdate);
     }
   };
 
@@ -202,6 +208,13 @@ const AudioDropDisplay: React.FC = () => {
               </li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {/*File being viewed text*/}
+      {currentFileName && (
+        <div style={{ marginTop: "10px" }}>
+          <strong>Viewing File:</strong> {currentFileName}
         </div>
       )}
 
