@@ -236,10 +236,10 @@ const AudioDropDisplay: React.FC = () => {
           }}
         >
           {currentIndex > 0 && <button onClick={backButton}>Back</button>}
+          <button onClick={downloadTextFile}>Download Output</button>
           {currentIndex < outputArray.length - 1 && (
-            <button onClick={downloadTextFile}>Download Output</button>
+            <button onClick={nextButton}>Next</button>
           )}
-          <button onClick={nextButton}>Next</button>
         </div>
       )}
     </div>
