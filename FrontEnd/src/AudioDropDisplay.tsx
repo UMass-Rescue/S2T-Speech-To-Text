@@ -235,8 +235,10 @@ const AudioDropDisplay: React.FC = () => {
             gap: "20px",
           }}
         >
-          <button onClick={backButton}>Back</button>
-          <button onClick={downloadTextFile}>Download Output</button>
+          {currentIndex > 0 && <button onClick={backButton}>Back</button>}
+          {currentIndex < outputArray.length - 1 && (
+            <button onClick={downloadTextFile}>Download Output</button>
+          )}
           <button onClick={nextButton}>Next</button>
         </div>
       )}
