@@ -120,7 +120,7 @@ const AudioDropDisplay: React.FC = () => {
       formData.append("file_uploads", file);
     });
     try {
-      const endpoint = "http://127.0.0.1:8000/uploadfile/";
+      const endpoint = "http://127.0.0.1:8000/diarization/";
       const response = await fetch(endpoint, {
         method: "POST",
         body: formData,
