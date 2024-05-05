@@ -36,7 +36,8 @@ const AudioDropDisplay: React.FC = () => {
     const element = document.createElement("a");
     const file = new Blob([outputText], { type: "text/plain" });
     element.href = URL.createObjectURL(file);
-    element.download = "output.txt";
+    const name = outputArray[currentIndex].fileName
+    element.download = name.substring(0,name.indexOf("."))+".txt";
     document.body.appendChild(element);
     element.click();
   };
@@ -82,17 +83,21 @@ const AudioDropDisplay: React.FC = () => {
         file.forEach((file, index) => {
           const fileName = file.name.toString();
           const transcriptData = output[index]["transcript"];
-          outputString = outputString + fileName + "\n";
-          outputString += output[0]["transcript"] + "\n";
+          // outputString = outputString + fileName + "\n";
+          // outputString += output[0]["transcript"] + "\n";
           outputArray.push({ fileName, transcriptData });
           // console.log(output[fileName])
         });
 
-        console.log(output);
-        console.log(output[0]);
-        console.log(output[1]);
+        // console.log(output);
+        // console.log(output[0]);
+        // console.log(output[1]);
 
-        setOutputText(outputString);
+        // setOutputText(outputString);
+
+        const fileView = outputArray[currentIndex];
+        const outputUpdate = fileView.transcriptData;
+        setOutputText(outputUpdate);
       } else {
         console.error("Failed to uplaod");
       }
