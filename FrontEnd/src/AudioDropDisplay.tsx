@@ -16,6 +16,7 @@ const AudioDropDisplay: React.FC = () => {
   const [outputArray, setOutputArray] = useState<FileData[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentFileName, setCurrentFileName] = useState<string>("");
+  const [whisperVersion, setWhisperVersion] = useState("small");
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     //Accept array of file
@@ -74,6 +75,7 @@ const AudioDropDisplay: React.FC = () => {
     file.forEach((file) => {
       formData.append("file_upload", file);
     });
+    formData.append("whisper_version", whisperVersion);
     try {
       const endpoint = "http://127.0.0.1:8000/uploadfile/";
       const response = await fetch(endpoint, {
@@ -114,6 +116,7 @@ const AudioDropDisplay: React.FC = () => {
     file.forEach((file) => {
       formData.append("file_uploads", file);
     });
+    formData.append("whisper_version", whisperVersion); //Not sure this is needed here, adding incase
     try {
       const endpoint = "http://127.0.0.1:8000/uploadfile/";
       const response = await fetch(endpoint, {
@@ -141,6 +144,14 @@ const AudioDropDisplay: React.FC = () => {
     }, // Accept audio files only
   });
 
+  const summarizeText = async () => {
+    console.log("Summarizing Text");
+  };
+
+  const endSession = async () => {
+    console.log("Ending Session");
+  };
+
   return (
     <div style={{ margin: "20px" }}>
       <div
@@ -157,6 +168,23 @@ const AudioDropDisplay: React.FC = () => {
           Either Drop A File Here Or Click To Browse Your Device
         </p>
       </div>
+
+      {/* Dropdown for selecting Whisper version */}
+      {file.length > 0 && (
+        <div style={{ marginTop: "10px" }}>
+          <label htmlFor="whisper-ver-select">Choose a Whisper Model</label>
+          <select
+            id="whisper-ver-select"
+            value={whisperVersion}
+            onChange={(e) => setWhisperVersion(e.target.value)}
+            style={{ marginLeft: "10px" }}
+          >
+            <option value="base">Base</option>
+            <option value="small">Small</option>
+            <option value="medium">Medium</option>
+          </select>
+        </div>
+      )}
       {/* Display Submit Button and Remove Button, Once a file is uploaded */}
       {file.length > 0 && (
         <div
@@ -240,6 +268,20 @@ const AudioDropDisplay: React.FC = () => {
           {currentIndex < outputArray.length - 1 && (
             <button onClick={nextButton}>Next</button>
           )}
+        </div>
+      )}
+      {outputText !== initialOutputText && outputText !== loadingText && (
+        <div
+          style={{
+            marginTop: "10px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "20px",
+          }}
+        >
+          <button onClick={summarizeText}>Summarize Text</button>
+          <button onClick={endSession}>End Session & Close Tab</button>
         </div>
       )}
     </div>
