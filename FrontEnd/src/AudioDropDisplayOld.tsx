@@ -15,7 +15,6 @@ const AudioDropDisplay: React.FC = () => {
   var outputString = "";
   const [outputArray, setOutputArray] = useState<FileData[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [currentFileName, setCurrentFileName] = useState<string>("");
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     //Accept array of file
@@ -26,7 +25,6 @@ const AudioDropDisplay: React.FC = () => {
   const removeAllAudio = () => {
     setFile([]); // Reset the file state to null
     setOutputText(initialOutputText);
-    setCurrentFileName("");
   };
 
   const removeOneAudio = (index: number) => {
@@ -38,8 +36,7 @@ const AudioDropDisplay: React.FC = () => {
     const element = document.createElement("a");
     const file = new Blob([outputText], { type: "text/plain" });
     element.href = URL.createObjectURL(file);
-    const name = outputArray[currentIndex].fileName
-    element.download = name.substring(0,name.indexOf("."))+".txt";
+    element.download = "output.txt";
     document.body.appendChild(element);
     element.click();
   };
@@ -50,9 +47,7 @@ const AudioDropDisplay: React.FC = () => {
       setCurrentIndex(nextInd);
       const fileView = outputArray[nextInd];
       const outputUpdate = fileView.transcriptData;
-      const outputNameUpdate = fileView.fileName;
       setOutputText(outputUpdate);
-      setCurrentFileName(outputNameUpdate);
     }
   };
 
@@ -62,9 +57,7 @@ const AudioDropDisplay: React.FC = () => {
       setCurrentIndex(prevInd);
       const fileView = outputArray[prevInd];
       const outputUpdate = fileView.transcriptData;
-      const outputNameUpdate = fileView.fileName;
       setOutputText(outputUpdate);
-      setCurrentFileName(outputNameUpdate);
     }
   };
 
@@ -89,21 +82,17 @@ const AudioDropDisplay: React.FC = () => {
         file.forEach((file, index) => {
           const fileName = file.name.toString();
           const transcriptData = output[index]["transcript"];
-          // outputString = outputString + fileName + "\n";
-          // outputString += output[0]["transcript"] + "\n";
+          outputString = outputString + fileName + "\n";
+          outputString += output[0]["transcript"] + "\n";
           outputArray.push({ fileName, transcriptData });
           // console.log(output[fileName])
         });
 
-        // console.log(output);
-        // console.log(output[0]);
-        // console.log(output[1]);
+        console.log(output);
+        console.log(output[0]);
+        console.log(output[1]);
 
-        // setOutputText(outputString);
-
-        const fileView = outputArray[currentIndex];
-        const outputUpdate = fileView.transcriptData;
-        setOutputText(outputUpdate);
+        setOutputText(outputString);
       } else {
         console.error("Failed to uplaod");
       }
@@ -213,13 +202,6 @@ const AudioDropDisplay: React.FC = () => {
               </li>
             ))}
           </ul>
-        </div>
-      )}
-
-      {/*File being viewed text*/}
-      {currentFileName && (
-        <div style={{ marginTop: "10px" }}>
-          <strong>Viewing File:</strong> {currentFileName}
         </div>
       )}
 
