@@ -114,11 +114,10 @@ const AudioDropDisplay: React.FC = () => {
     e.preventDefault();
     const formData = new FormData();
     file.forEach((file) => {
-      formData.append("file_uploads", file);
+      formData.append("file_upload", file);
     });
-    formData.append("whisper_version", whisperVersion); //Not sure this is needed here, adding incase
     try {
-      const endpoint = "http://127.0.0.1:8000/uploadfile/";
+      const endpoint = "http://127.0.0.1:8000/diarization/";
       const response = await fetch(endpoint, {
         method: "POST",
         body: formData,
@@ -126,8 +125,14 @@ const AudioDropDisplay: React.FC = () => {
 
       if (response.ok) {
         console.log("File Uploaded Successfully");
-        //setOutputText("Transcribing...");
-        setOutputText(await response.text());
+        const output = JSON.parse(await response.text());
+        file.forEach((file, index) => {
+          const fileName = file.name.toString();
+          const transcriptData = output[index]["transcript"];
+          outputString = outputString + fileName + "\n";
+          outputString += output[0]["transcript"] + "\n";
+          outputArray.push({ fileName, transcriptData });});
+          setOutputText(outputString);
       } else {
         console.error("Failed to uplaod");
       }
