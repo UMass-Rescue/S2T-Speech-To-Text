@@ -62,16 +62,13 @@ async def create_upload_file(file_upload: List[UploadFile]):
 # async def transcribeAudio():
 
 @app.post("/diarization/")
-async def create_diarization(file_upload: UploadFile):
-    returnDict = {}
-    cnt=0
+async def create_diarization(file_upload: List[UploadFile]):
     for file in file_upload:
         data =await file.read()
         path = os.path.join("../audioData",file.filename)
         with open(path,'wb') as f:
             f.write(data)
     diarize_output = diarize()
-    print(diarize_output)
     return diarize_output
 
 '''
