@@ -4,7 +4,7 @@ import whisper
 
 
 
-def transcribe(path,target="en",modelName= "smaller.en"):
+def transcribe(path,target="en",modelName= "small.en"):
     # result = model.transcribe(path)
     model = whisper.load_model(modelName)
     result = model.transcribe(path,language=target,task="translate")

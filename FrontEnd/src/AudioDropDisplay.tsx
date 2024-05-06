@@ -16,7 +16,8 @@ const AudioDropDisplay: React.FC = () => {
   const [outputArray, setOutputArray] = useState<FileData[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentFileName, setCurrentFileName] = useState<string>("");
-  const [whisperVersion, setWhisperVersion] = useState("small");
+  const [whisperVersion, setWhisperVersion] = useState<string>("");
+  
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     //Accept array of file
@@ -70,13 +71,13 @@ const AudioDropDisplay: React.FC = () => {
   };
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
-    setOutputText(loadingText);
     e.preventDefault();
     const formData = new FormData();
     file.forEach((file) => {
       formData.append("file_upload", file);
     });
-    formData.append("whisper_version", whisperVersion);
+    // formData.append("whisper_version", whisperVersion);
+    console.log(formData);
     try {
       const endpoint = "http://127.0.0.1:8000/uploadfile/";
       const response = await fetch(endpoint, {
@@ -108,6 +109,7 @@ const AudioDropDisplay: React.FC = () => {
         setOutputText(outputUpdate);
       } else {
         console.error("Failed to uplaod");
+        console.error(response)
       }
     } catch (error) {
       console.error(error);
@@ -159,8 +161,22 @@ const AudioDropDisplay: React.FC = () => {
   };
 
   const endSession = async () => {
-    console.log("Ending Session");
-  };
+    try {
+      const endpoint = "http://127.0.0.1:8000/endSession/";
+      const response = await fetch(endpoint, {
+        method: "POST"
+      });
+
+      if (response.ok) {
+
+        console.log("Ending Session");
+      }
+    
+    }
+    catch(error){
+      console.log(error)
+    }
+    };
 
   return (
     <div style={{ margin: "20px" }}>
@@ -179,7 +195,7 @@ const AudioDropDisplay: React.FC = () => {
         </p>
       </div>
 
-      {/* Dropdown for selecting Whisper version */}
+      {/* Dropdown for selecting Whisper version
       {file.length > 0 && (
         <div style={{ marginTop: "10px" }}>
           <label htmlFor="whisper-ver-select">Choose a Whisper Model</label>
@@ -189,12 +205,12 @@ const AudioDropDisplay: React.FC = () => {
             onChange={(e) => setWhisperVersion(e.target.value)}
             style={{ marginLeft: "10px" }}
           >
-            <option value="base">Base</option>
-            <option value="small">Small</option>
-            <option value="medium">Medium</option>
+            <option value="base.en">Base</option>
+            <option value="small.en">Small</option>
+            <option value="medium.en">Medium</option>
           </select>
         </div>
-      )}
+      )} */}
       {/* Display Submit Button and Remove Button, Once a file is uploaded */}
       {file.length > 0 && (
         <div
