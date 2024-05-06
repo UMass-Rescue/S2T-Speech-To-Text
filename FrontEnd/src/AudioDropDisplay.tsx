@@ -40,10 +40,22 @@ const AudioDropDisplay: React.FC = () => {
     const element = document.createElement("a");
     const file = new Blob([outputText], { type: "text/plain" });
     element.href = URL.createObjectURL(file);
-    const name = outputArray[currentIndex].fileName
-    element.download = name.substring(0,name.indexOf("."))+".txt";
+    element.download = "${currentFileName}.txt"; //Test to make it download name of file
+    //element.download = "output.txt";
     document.body.appendChild(element);
     element.click();
+  };
+
+  const downloadAllTextFile = () => {
+    outputArray.forEach((item) => {
+      const file = new Blob([item.transcriptData], { type: "text/plain" });
+      const element = document.createElement("a");
+
+      element.href = URL.createObjectURL(file);
+      element.download = "${item.fileName}.txt";
+      document.body.appendChild(element);
+      element.click();
+    });
   };
 
   const nextButton = () => {
@@ -138,8 +150,9 @@ const AudioDropDisplay: React.FC = () => {
           const transcriptData = output[index]["transcript"];
           outputString = outputString + fileName + "\n";
           outputString += output[0]["transcript"] + "\n";
-          outputArray.push({ fileName, transcriptData });});
-          setOutputText(outputString);
+          outputArray.push({ fileName, transcriptData });
+        });
+        setOutputText(outputString);
       } else {
         console.error("Failed to uplaod");
       }
@@ -308,6 +321,7 @@ const AudioDropDisplay: React.FC = () => {
         >
           <button onClick={summarizeText}>Summarize Text</button>
           <button onClick={endSession}>End Session & Close Tab</button>
+          <button onClick={downloadAllTextFile}>Download All Text</button>
         </div>
       )}
     </div>
