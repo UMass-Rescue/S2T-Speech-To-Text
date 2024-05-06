@@ -237,7 +237,7 @@ const AudioDropDisplay: React.FC = () => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            gap: "20px",
+            gap: "20px"
           }}
         >
           {currentIndex > 0 && <button onClick={backButton}>Back</button>}

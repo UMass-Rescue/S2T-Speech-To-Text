@@ -24,6 +24,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+text=""
+file_tracking = list()
+
 @app.get("/")
 async def root():
     return {"message": "Hello World!!!! Lets Transcribe"}
@@ -40,9 +43,9 @@ async def create_upload_file(file_upload: List[UploadFile]):
         print(path)
         with open(path,'wb') as f:
             f.write(data)
-        returnDict[cnt]={"file_name":file.filename,"transcript":transcribe(path)}
+        text = transcribe(path)
+        returnDict[cnt]={"file_name":file.filename,"transcript":text}
         cnt+=1
-        # returnDict[file.filename] = transcribe(path)
     return returnDict
 
         #text.append(transcribe(path))
