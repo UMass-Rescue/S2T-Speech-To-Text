@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import "./App.css";
 
 interface FileData {
   fileName: string;
@@ -17,6 +18,8 @@ const AudioDropDisplay: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentFileName, setCurrentFileName] = useState<string>("");
   const [whisperVersion, setWhisperVersion] = useState<string>("");
+
+  const transcribed_text = ""
   
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -33,6 +36,9 @@ const AudioDropDisplay: React.FC = () => {
 
   const removeOneAudio = (index: number) => {
     setFile((currentFiles) => currentFiles.filter((_, idx) => idx !== index));
+    if(file.length == 1){
+      setOutputText(initialOutputText)
+    } 
   };
 
   //Sourced from https://stackoverflow.com/questions/44656610/download-a-string-as-txt-file-in-react
@@ -83,6 +89,7 @@ const AudioDropDisplay: React.FC = () => {
   };
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
+    setOutputText("Uploading files and transcribing it...")
     e.preventDefault();
     const formData = new FormData();
     file.forEach((file) => {
@@ -129,7 +136,7 @@ const AudioDropDisplay: React.FC = () => {
   };
 
   const handleDiarizeSubmit = async (e: { preventDefault: () => void }) => {
-    setOutputText(loadingText);
+    setOutputText("Uploading files and diarizing it...")
     e.preventDefault();
     const formData = new FormData();
     file.forEach((file) => {
@@ -152,7 +159,9 @@ const AudioDropDisplay: React.FC = () => {
           outputString += output[0]["transcript"] + "\n";
           outputArray.push({ fileName, transcriptData });
         });
-        setOutputText(outputString);
+        const fileView = outputArray[currentIndex];
+        const outputUpdate = fileView.transcriptData;
+        setOutputText(outputUpdate);
       } else {
         console.error("Failed to uplaod");
       }
@@ -169,8 +178,31 @@ const AudioDropDisplay: React.FC = () => {
     }, // Accept audio files only
   });
 
-  const summarizeText = async () => {
+  const summarizeText = async (e: { preventDefault: () => void }) => {
+    setOutputText("Summarizing the output...")
     console.log("Summarizing Text");
+    e.preventDefault();
+    try {
+      const endpoint = "http://127.0.0.1:8000/summarize/";
+      const fileView = outputArray[currentIndex];
+      const outputUpdate = fileView.transcriptData;
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {'Accept': 'application/json',
+        'Content-Type': 'application/json'},
+        body: JSON.stringify({"transcribed_text": outputUpdate})
+      });
+
+      if (response.ok) {
+        const response_output = JSON.parse(await response.text());
+        const response_output_string = response_output["summarized_text"];
+        setOutputText(response_output_string)
+      } else {
+        setOutputText("Error while summarizing text");
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const endSession = async () => {
@@ -179,10 +211,14 @@ const AudioDropDisplay: React.FC = () => {
       const response = await fetch(endpoint, {
         method: "POST"
       });
-
       if (response.ok) {
-
         console.log("Ending Session");
+        setFile([]); // Reset the file state to null
+        setOutputText("Ending Session");
+        setCurrentFileName("");
+        setOutputArray([])
+        setCurrentIndex(0)
+        window.close()
       }
     
     }
@@ -235,9 +271,9 @@ const AudioDropDisplay: React.FC = () => {
             gap: "20px",
           }}
         >
-          <button onClick={handleSubmit}>Transcribe Audio</button>
-          <button onClick={removeAllAudio}>Remove All Audio</button>
-          <button onClick={handleDiarizeSubmit}>Diarize Audio</button>
+          <button className="button" onClick={handleSubmit}>Transcribe Audio</button>
+          <button className="button" onClick={removeAllAudio}>Remove All Audio</button>
+          <button className="button" onClick={handleDiarizeSubmit}>Diarize Audio</button>
         </div>
       )}
       {/* Display Files Attached */}
@@ -267,6 +303,7 @@ const AudioDropDisplay: React.FC = () => {
                   {file.name}
                 </span>
                 <button
+                className="button"
                   onClick={() => removeOneAudio(index)}
                   style={{ marginLeft: "10px" }}
                 >
@@ -302,10 +339,10 @@ const AudioDropDisplay: React.FC = () => {
             gap: "20px"
           }}
         >
-          {currentIndex > 0 && <button onClick={backButton}>Back</button>}
-          <button onClick={downloadTextFile}>Download Output</button>
+          {currentIndex > 0 && <button className="button" onClick={backButton}>Back</button>}
+          <button className="button" onClick={downloadTextFile}>Download Output</button>
           {currentIndex < outputArray.length - 1 && (
-            <button onClick={nextButton}>Next</button>
+            <button className="button" onClick={nextButton}>Next</button>
           )}
         </div>
       )}
@@ -319,9 +356,9 @@ const AudioDropDisplay: React.FC = () => {
             gap: "20px",
           }}
         >
-          <button onClick={summarizeText}>Summarize Text</button>
-          <button onClick={endSession}>End Session & Close Tab</button>
-          <button onClick={downloadAllTextFile}>Download All Text</button>
+          <button className="button" onClick={summarizeText}>Summarize Text</button>
+          <button className="button" onClick={endSession}>End Session & Close Tab</button>
+          <button className="button" onClick={downloadAllTextFile}>Download All Text</button>
         </div>
       )}
     </div>

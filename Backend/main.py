@@ -6,6 +6,11 @@ import os
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from transcript_diarize import diarize
+from pydantic import BaseModel
+from summarize import summarize
+
+class Item(BaseModel):
+    transcribed_text: str
 
 app = FastAPI()
 
@@ -41,7 +46,7 @@ async def create_upload_file(file_upload: List[UploadFile] ):
     for file in file_upload:
         data =await file.read()
         path = os.path.join("../audioData",file.filename)
-        print(path)
+        #print(path)
         with open(path,'wb') as f:
             f.write(data)
         text = transcribe(path,modelName = modelName)
@@ -57,8 +62,15 @@ async def create_diarization(file_upload: List[UploadFile]):
         path = os.path.join("../audioData",file.filename)
         with open(path,'wb') as f:
             f.write(data)
+        file_tracking.append(path)
     diarize_output = diarize()
     return diarize_output
+
+
+@app.post("/summarize/")
+async def create_summary(item: Item):
+    # files = await file_upload
+    return summarize(item.transcribed_text)
 
 
 @app.post("/endSession/")
